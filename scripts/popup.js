@@ -28,6 +28,7 @@
     chrome.downloads.onDeterminingFilename.addListener(suggestNewFilename);
 
     $('#download_button').on('click', downloadImages);
+    $('#download-csv').on('click', downloadCSV);
 
     if (ls.show_url_filter === 'true') {
       $('#filter_textbox').on('keyup', filterImages);
@@ -273,7 +274,7 @@
               break;
             case 'wildcard':
               filterValue = filterValue.replace(/([.^$[\]\\(){}|-])/g, '\\$1').replace(/([?*+])/, '.$1');
-              /* fall through */
+            /* fall through */
             case 'regex':
               visibleImages = visibleImages.filter(function (url) {
                 try {
@@ -298,13 +299,13 @@
         visibleImages = visibleImages.filter(function (url) {
           var image = images_cache.children('img[src="' + encodeURI(url) + '"]')[0];
           return (ls.show_image_width_filter !== 'true' ||
-                   (ls.filter_min_width_enabled !== 'true' || ls.filter_min_width <= image.naturalWidth) &&
-                   (ls.filter_max_width_enabled !== 'true' || image.naturalWidth <= ls.filter_max_width)
-                 ) &&
-                 (ls.show_image_height_filter !== 'true' ||
-                   (ls.filter_min_height_enabled !== 'true' || ls.filter_min_height <= image.naturalHeight) &&
-                   (ls.filter_max_height_enabled !== 'true' || image.naturalHeight <= ls.filter_max_height)
-                 );
+            (ls.filter_min_width_enabled !== 'true' || ls.filter_min_width <= image.naturalWidth) &&
+            (ls.filter_max_width_enabled !== 'true' || image.naturalWidth <= ls.filter_max_width)
+          ) &&
+            (ls.show_image_height_filter !== 'true' ||
+              (ls.filter_min_height_enabled !== 'true' || ls.filter_min_height <= image.naturalHeight) &&
+              (ls.filter_max_height_enabled !== 'true' || image.naturalHeight <= ls.filter_max_height)
+            );
         });
       }
 
@@ -372,6 +373,24 @@
     }
   }
 
+  function downloadCSV() {
+    if (visibleImages || visibleImages.length) {
+      let csv = '';
+      visibleImages.forEach(image => image && (csv += image.replace('/236x/', '/originals/') + '\n'));
+      // var hiddenElement = document.createElement('a');
+      // hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
+      // hiddenElement.target = '_blank';
+      // hiddenElement.click();
+      const dataURL = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
+      const filename = 'images.csv';
+      chrome.downloads.download({
+        url:      dataURL,
+        filename,
+        saveAs:   true
+    });
+    }
+  }
+
   function downloadImages() {
     if (ls.show_download_confirmation === 'true') {
       showDownloadConfirmation(startDownload);
@@ -389,7 +408,7 @@
       }
       ls.image_count = checkedImages.length;
       ls.image_number = 1;
-      checkedImages.forEach(function(checkedImage) {
+      checkedImages.forEach(function (checkedImage) {
         chrome.downloads.download({ url: checkedImage });
       });
 
@@ -411,7 +430,7 @@
           <label><input type="checkbox" id="dont_show_again_checkbox" />Don\'t show this again</label>\
         </div>'
       )
-      .appendTo('#filters_container');
+        .appendTo('#filters_container');
 
     $('#yes_button, #no_button').on('click', function () {
       ls.show_download_confirmation = !$('#dont_show_again_checkbox').prop('checked');
