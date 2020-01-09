@@ -344,7 +344,7 @@
         for (var columnIndex = 0; columnIndex < columns; columnIndex++) {
           var index = rowIndex * columns + columnIndex;
           if (index === visibleImages.length) break;
-
+          visibleImages[index] = visibleImages[index].replace('/236x/', '/originals/');
           if (show_image_url) {
             tools_row.append('<td><input type="text" class="image_url_textbox" value="' + visibleImages[index] + '" readonly /></td>');
           }
