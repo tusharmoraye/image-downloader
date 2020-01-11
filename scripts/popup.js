@@ -109,6 +109,7 @@
     $('#images_table')
       .on('change', '#toggle_all_checkbox', function () {
         $('#download_button').prop('disabled', !this.checked);
+        $('#download-csv').prop('disabled', !this.checked);
         for (var i = 0; i < visibleImages.length; i++) {
           $('#image' + i).toggleClass('checked', this.checked);
         }
@@ -130,6 +131,8 @@
         }
 
         $('#download_button').prop('disabled', allAreUnchecked);
+        $('#download-csv').prop('disabled', allAreUnchecked);
+
 
         var toggle_all_checkbox = $('#toggle_all_checkbox');
         toggle_all_checkbox.prop('indeterminate', !(allAreChecked || allAreUnchecked));
@@ -345,7 +348,7 @@
         for (var columnIndex = 0; columnIndex < columns; columnIndex++) {
           var index = rowIndex * columns + columnIndex;
           if (index === visibleImages.length) break;
-          visibleImages[index] = visibleImages[index].replace('/236x/', '/originals/');
+          visibleImages[index] = visibleImages[index].replace(/\/[0-9]{3,4}x\//, '/originals/');
           if (show_image_url) {
             tools_row.append('<td><input type="text" class="image_url_textbox" value="' + visibleImages[index] + '" readonly /></td>');
           }
@@ -374,9 +377,15 @@
   }
 
   function downloadCSV() {
-    if (visibleImages || visibleImages.length) {
+    let checkedImages = [];
+    for (var i = 0; i < visibleImages.length; i++) {
+      if ($('#image' + i).hasClass('checked')) {
+        checkedImages.push(visibleImages[i]);
+      }
+    }
+    if (checkedImages && checkedImages.length) {
       let csv = '';
-      visibleImages.forEach(image => image && (csv += image.replace('/236x/', '/originals/') + '\n'));
+      checkedImages.forEach(image => image && (csv += image.replace(/\/[0-9]{3,4}x\//, '/originals/') + '\n'));
       // var hiddenElement = document.createElement('a');
       // hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
       // hiddenElement.target = '_blank';
@@ -384,10 +393,10 @@
       const dataURL = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
       const filename = 'images.csv';
       chrome.downloads.download({
-        url:      dataURL,
+        url: dataURL,
         filename,
-        saveAs:   true
-    });
+        saveAs: true
+      });
     }
   }
 
