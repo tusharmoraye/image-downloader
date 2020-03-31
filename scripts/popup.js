@@ -348,7 +348,7 @@
         for (var columnIndex = 0; columnIndex < columns; columnIndex++) {
           var index = rowIndex * columns + columnIndex;
           if (index === visibleImages.length) break;
-          visibleImages[index] = visibleImages[index].replace(/\/[0-9]{3,4}x\//, '/originals/');
+          // visibleImages[index] = visibleImages[index].replace(/\/[0-9]{3,4}x\//, '/originals/');
           if (show_image_url) {
             tools_row.append('<td><input type="text" class="image_url_textbox" value="' + visibleImages[index] + '" readonly /></td>');
           }
@@ -385,7 +385,8 @@
     }
     if (checkedImages && checkedImages.length) {
       let csv = '';
-      checkedImages.forEach(image => image && (csv += image.replace(/\/[0-9]{3,4}x\//, '/originals/') + '\n'));
+      // checkedImages.forEach(image => image && (csv += image.replace(/\/[0-9]{3,4}x\//, '/originals/') + '\n'));
+      checkedImages.forEach(image => image && (csv += image + '\n'));
       // var hiddenElement = document.createElement('a');
       // hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
       // hiddenElement.target = '_blank';
